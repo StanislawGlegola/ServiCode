@@ -6,11 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 
 @Configuration
 public class RepositoryConfiguration {
+
+    private static final Logger log = LoggerFactory.getLogger(RepositoryConfiguration.class);
 
     @Autowired
     private Environment env;
@@ -26,10 +30,17 @@ public class RepositoryConfiguration {
         String railwayUser = env.getProperty("MYSQLUSER");
         String railwayPassword = env.getProperty("MYSQLPASSWORD");
         
+        log.info("Railway configuration:");
+        log.info("Host: {}", railwayHost);
+        log.info("Port: {}", railwayPort);
+        log.info("Database: {}", railwayDatabase);
+        log.info("User: {}", railwayUser);
+        
         if (railwayHost != null) {
             // Użyj konfiguracji Railway
-            String url = String.format("jdbc:mysql://%s:%s/%s?allowPublicKeyRetrieval=true&useSSL=false",
+            String url = String.format("jdbc:mysql://%s:%s/%s?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC",
                     railwayHost, railwayPort, railwayDatabase);
+            log.info("Connecting to Railway MySQL with URL: {}", url);
             dataSource.setUrl(url);
             dataSource.setUsername(railwayUser);
             dataSource.setPassword(railwayPassword);
@@ -39,7 +50,8 @@ public class RepositoryConfiguration {
             String dbPort = env.getProperty("DB_PORT");
             String dbSid = env.getProperty("DB_SID");
             String url = "jdbc:mysql://" + dbHost + ":" + dbPort + "/" + dbSid 
-                        + "?allowPublicKeyRetrieval=true&useSSL=false";
+                        + "?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC";
+            log.info("Connecting to local MySQL with URL: {}", url);
             dataSource.setUrl(url);
             dataSource.setUsername(env.getProperty("DB_USERNAME"));
             dataSource.setPassword(env.getProperty("DB_PASSWORD"));
