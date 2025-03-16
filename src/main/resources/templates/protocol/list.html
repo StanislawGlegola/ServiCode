@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html(
+        ~{::title},
+        ~{::style},
+        ~{::div.content},
+        ~{::script}
+      )}">
+<head>
+    <title>Lista Protokołów - ServiCode</title>
+    <style>
+        /* Style tutaj */
+    </style>
+</head>
+<body>
+<div class="content">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Lista Protokołów</h2>
+        <a th:href="@{/protocol/form/new}" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Dodaj Protokół
+        </a>
+    </div>
+
+    <!-- Komunikat o sukcesie -->
+    <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-2"></i>
+        <span th:text="${message}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Komunikat o błędzie -->
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Tabela protokołów -->
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Data rozpoczęcia</th>
+                <th>Data zakończenia</th>
+                <th>Klient</th>
+                <th>Urządzenie (S/N)</th>
+                <th>Technicy (F-gaz)</th>
+                <th>Opis problemu</th>
+                <th>Opis prac</th>
+                <th>Materiały</th>
+                <th>Uwagi</th>
+                <th>Akcje</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="protocol : ${protocols}">
+                <td th:text="${protocol.id}"></td>
+                <td th:text="${#temporals.format(protocol.startDate, 'dd-MM-yyyy HH:mm')}"></td>
+                <td th:text="${protocol.endDate != null ? #temporals.format(protocol.endDate, 'dd-MM-yyyy HH:mm') : '-'}"></td>
+                <td th:text="${protocol.customerName}"></td>
+                <td th:text="${protocol.deviceSerialNumber}"></td>
+                <td>
+                        <span th:each="technician : ${protocol.technicians}">
+                            <span th:text="${technician.firstName + ' ' + technician.lastName + ' (' + technician.fGaz + ')'}"></span><br/>
+                        </span>
+                </td>
+                <td th:text="${protocol.issueDescription}"></td>
+                <td th:text="${protocol.workDescription}"></td>
+                <td th:text="${protocol.materials}"></td>
+                <td th:text="${protocol.notes}"></td>
+                <td>
+                    <a th:href="@{/protocol/form/edit/{id}(id=${protocol.id})}" class="btn btn-warning btn-sm">
+                        <i class="bi bi-pencil"></i> Edytuj
+                    </a>
+                    <a th:href="@{/protocol/delete/{id}(id=${protocol.id})}"
+                       class="btn btn-danger btn-sm"
+                       onclick="return confirm('Czy na pewno chcesz usunąć ten protokół?')">
+                        <i class="bi bi-trash"></i> Usuń
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // Skrypty tutaj
+</script>
+</body>
+</html>

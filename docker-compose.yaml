@@ -1,0 +1,13 @@
+version: '3.7'
+services:
+  mysql:
+    container_name: servicode-mysql
+    image: mysql
+    restart: unless-stopped
+    env_file: ./.env
+    environment:
+      MYSQL_ROOT_PASSWORD: $DB_PASSWORD
+      MYSQL_DATABASE: $DB_SID
+      MYSQL_PASSWORD: $DB_PASSWORD
+    ports:
+      - "${DB_PORT}:3306"

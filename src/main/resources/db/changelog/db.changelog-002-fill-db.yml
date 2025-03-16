@@ -1,0 +1,31 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2
+      author: Stanislaw Glegola
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO customer (name, city, postal_code, street) 
+              VALUES 
+              ('ABC Cooling', 'Warszawa', '00-001', 'Marszałkowska 10'),
+              ('FrostTech', 'Kraków', '30-002', 'Długa 5'),
+              ('ColdService', 'Gdańsk', '80-003', 'Grunwaldzka 20');
+
+              INSERT INTO device (model, serial_number, manufacturer, customer_id) 
+              VALUES 
+              ('X2000', 'SN123456', 'CoolMaster', 1),
+              ('FrostAir 500', 'SN654321', 'ChillTech', 1),
+              ('ArcticFreeze 3000', 'SN987654', 'IcePro', 2),
+              ('PolarChill 700', 'SN111222', 'ColdTech', 3);
+
+              INSERT INTO technician (first_name, last_name, f_gaz) 
+              VALUES 
+              ('Jan', 'Kowalski', 'UPR-001'),
+              ('Anna', 'Nowak', 'UPR-002'),
+              ('Marek', 'Wiśniewski', 'UPR-003');
+
+              INSERT INTO protocol (start_date, end_date, issue_description, work_description, materials, notes, customer_id, device_id) 
+              VALUES 
+              ('2024-02-01 08:00:00', '2024-02-01 12:00:00', 'Urządzenie nie chłodzi', 'Uzupełnienie czynnika chłodniczego, test szczelności', 'R134a - 500g, Uszczelka - 2 szt', 'Brak dodatkowych uwag', 1, 1),
+              ('2024-02-05 09:30:00', '2024-02-05 13:30:00', 'Wycieki oleju', 'Wymiana uszczelek i test szczelności', 'Olej POE - 100ml, Uszczelki - 3 szt', 'Potrzebna kolejna kontrola za miesiąc', 2, 2),
+              ('2024-02-10 14:00:00', '2024-02-10 16:00:00', 'Hałasująca sprężarka', 'Diagnostyka i wymiana sprężarki', 'Sprężarka - 1 szt, Olej POE - 150ml', 'Klient zadowolony, problem rozwiązany', 3, 3);

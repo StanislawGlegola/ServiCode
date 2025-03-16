@@ -1,0 +1,26 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-protocol-technician
+      author: system
+      changes:
+        - createTable:
+            tableName: protocol_technician
+            columns:
+              - column:
+                  name: protocol_id
+                  type: int
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_protocol_technician_protocol
+                    references: protocol(id)
+              - column:
+                  name: technician_id
+                  type: int
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_protocol_technician_technician
+                    references: technician(id)
+        - addPrimaryKey:
+            tableName: protocol_technician
+            columnNames: protocol_id, technician_id
+            constraintName: pk_protocol_technician 

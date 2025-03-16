@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html(
+        title=~{::title},
+        styles=~{::style},
+        content=~{::div.content},
+        scripts=~{::script}
+      )}">
+<head>
+    <title>Zarządzanie Technikami - ServiCore</title>
+    <style>
+        /* Dodatkowe style specyficzne dla widoku techników */
+    </style>
+</head>
+<body>
+    <div class="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Lista Techników</h2>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#technicianModal">
+                <i class="bi bi-plus-lg"></i> Dodaj Technika
+            </button>
+        </div>
+
+        <!-- Komunikat o sukcesie -->
+        <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i>
+            <span th:text="${message}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Tabela techników -->
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Imię</th>
+                    <th>Nazwisko</th>
+                    <th>Numer F-gaz</th>
+                    <th>Akcje</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="technician : ${technicians}">
+                    <td th:text="${technician.id}"></td>
+                    <td th:text="${technician.firstName}"></td>
+                    <td th:text="${technician.lastName}"></td>
+                    <td th:text="${technician.fGaz}"></td>
+                    <td>
+                        <button type="button" class="btn btn-warning btn-sm"
+                                th:attr="data-id=${technician.id},
+                                        data-firstName=${technician.firstName},
+                                        data-lastName=${technician.lastName},
+                                        data-fGaz=${technician.fGaz}"
+                                onclick="editTechnician(this)">
+                            <i class="bi bi-pencil"></i> Edytuj
+                        </button>
+                        <a th:href="@{/technician/delete/{id}(id=${technician.id})}"
+                           class="btn btn-danger btn-sm"
+                           onclick="return confirm('Czy na pewno chcesz usunąć tego technika?')">
+                            <i class="bi bi-trash"></i> Usuń
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Modal do dodawania/edycji -->
+        <div class="modal fade" id="technicianModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalTitle">Dodaj Technika</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="technicianForm" th:action="@{/technician/save}" method="post">
+                            <input type="hidden" id="technicianId" name="id">
+                            <div class="mb-3">
+                                <label for="firstName" class="form-label">Imię</label>
+                                <input type="text" class="form-control" id="firstName" name="firstName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="lastName" class="form-label">Nazwisko</label>
+                                <input type="text" class="form-control" id="lastName" name="lastName" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="fGaz" class="form-label">Numer F-gaz</label>
+                                <input type="text" class="form-control" id="fGaz" name="fGaz">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    <i class="bi bi-x-lg"></i> Anuluj
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-lg"></i> Zapisz
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function editTechnician(button) {
+            document.getElementById('modalTitle').textContent = 'Edytuj Technika';
+            document.getElementById('technicianId').value = button.getAttribute('data-id');
+            document.getElementById('firstName').value = button.getAttribute('data-firstName');
+            document.getElementById('lastName').value = button.getAttribute('data-lastName');
+            document.getElementById('fGaz').value = button.getAttribute('data-fGaz');
+            
+            new bootstrap.Modal(document.getElementById('technicianModal')).show();
+        }
+
+        document.getElementById('technicianModal').addEventListener('hidden.bs.modal', function () {
+            document.getElementById('modalTitle').textContent = 'Dodaj Technika';
+            document.getElementById('technicianForm').reset();
+            document.getElementById('technicianId').value = '';
+        });
+    </script>
+</body>
+</html> 

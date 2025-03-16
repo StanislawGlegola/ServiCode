@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html(
+        title=~{::title},
+        styles=~{::style},
+        content=~{::div.content},
+        scripts=~{::script}
+      )}">
+<head>
+    <title>Zarządzanie Urządzeniami - ServiCore</title>
+    <style>
+        /* Dodatkowe style specyficzne dla widoku urządzeń */
+    </style>
+</head>
+<body>
+    <div class="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Lista Urządzeń</h2>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#deviceModal">
+                <i class="bi bi-plus-lg"></i> Dodaj Urządzenie
+            </button>
+        </div>
+
+        <!-- Komunikat o sukcesie -->
+        <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i>
+            <span th:text="${message}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Tabela urządzeń -->
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Numer seryjny</th>
+                    <th>Model</th>
+                    <th>Producent</th>
+                    <th>Klient</th>
+                    <th>Akcje</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="device : ${devices}">
+                    <td th:text="${device.id}"></td>
+                    <td th:text="${device.serialNumber}"></td>
+                    <td th:text="${device.model}"></td>
+                    <td th:text="${device.manufacturer}"></td>
+                    <td th:text="${device.customerName}"></td>
+                    <td>
+                        <button type="button" class="btn btn-warning btn-sm"
+                                th:attr="data-id=${device.id},
+                                        data-serialNumber=${device.serialNumber},
+                                        data-model=${device.model},
+                                        data-manufacturer=${device.manufacturer},
+                                        data-customerId=${device.customerId}"
+                                onclick="editDevice(this)">
+                            <i class="bi bi-pencil"></i> Edytuj
+                        </button>
+                        <a th:href="@{/device/delete/{id}(id=${device.id})}"
+                           class="btn btn-danger btn-sm"
+                           onclick="return confirm('Czy na pewno chcesz usunąć to urządzenie?')">
+                            <i class="bi bi-trash"></i> Usuń
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Modal do dodawania/edycji -->
+        <div class="modal fade" id="deviceModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalTitle">Dodaj Urządzenie</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="deviceForm" th:action="@{/device/save}" method="post">
+                            <input type="hidden" id="deviceId" name="id">
+                            <div class="mb-3">
+                                <label for="serialNumber" class="form-label">Numer seryjny</label>
+                                <input type="text" class="form-control" id="serialNumber" name="serialNumber" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="model" class="form-label">Model</label>
+                                <input type="text" class="form-control" id="model" name="model" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="manufacturer" class="form-label">Producent</label>
+                                <input type="text" class="form-control" id="manufacturer" name="manufacturer" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="customerId" class="form-label">Klient</label>
+                                <select class="form-control" id="customerId" name="customerId" required>
+                                    <option value="">Wybierz klienta...</option>
+                                    <option th:each="customer : ${customers}"
+                                            th:value="${customer.id}"
+                                            th:text="${customer.name}">
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    <i class="bi bi-x-lg"></i> Anuluj
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-lg"></i> Zapisz
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function editDevice(button) {
+            document.getElementById('modalTitle').textContent = 'Edytuj Urządzenie';
+            document.getElementById('deviceId').value = button.getAttribute('data-id');
+            document.getElementById('serialNumber').value = button.getAttribute('data-serialNumber');
+            document.getElementById('model').value = button.getAttribute('data-model');
+            document.getElementById('manufacturer').value = button.getAttribute('data-manufacturer');
+            document.getElementById('customerId').value = button.getAttribute('data-customerId');
+            
+            new bootstrap.Modal(document.getElementById('deviceModal')).show();
+        }
+
+        document.getElementById('deviceModal').addEventListener('hidden.bs.modal', function () {
+            document.getElementById('modalTitle').textContent = 'Dodaj Urządzenie';
+            document.getElementById('deviceForm').reset();
+            document.getElementById('deviceId').value = '';
+        });
+    </script>
+</body>
+</html>

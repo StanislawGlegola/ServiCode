@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: ServiCode
+  thymeleaf:
+    cache: false
+    mode: HTML
+    encoding: UTF-8
+    prefix: classpath:/templates/
+    mvc:
+      static-path-pattern: /static/**
+    resources:
+      static-locations: classpath:/static/
+  server:
+    port: 8080
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
+    sql:
+      init:
+        mode: never #using liquibase to initialize db
+  logging:
+    level:
+      liquibase: WARN
+      pl.sg.servicode: DEBUG
+      org.hibernate.SQL: DEBUG
+      org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  jpa:
+    properties:
+      hibernate:
+        access:
+          type: field

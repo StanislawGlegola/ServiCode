@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3
+      author: Stanislaw Glegola
+      changes:
+        - sql:
+            sql: |
+              CREATE TABLE protocol_technician (
+                protocol_id INT NOT NULL,
+                technician_id INT NOT NULL,
+                PRIMARY KEY (protocol_id, technician_id),
+                FOREIGN KEY (protocol_id) REFERENCES protocol(id) ON DELETE CASCADE,
+                FOREIGN KEY (technician_id) REFERENCES technician(id) ON DELETE CASCADE
+              ); 

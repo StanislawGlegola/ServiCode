@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout/base :: html(
+        title=~{::title},
+        styles=~{::style},
+        content=~{::div.content},
+        scripts=~{::script}
+      )}">
+<head>
+    <title>Zarządzanie Klientami - ServiCore</title>
+    <style>
+        /* Dodatkowe style specyficzne dla widoku klientów */
+    </style>
+</head>
+<body>
+    <div class="content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Lista Klientów</h2>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#customerModal">
+                <i class="bi bi-plus-lg"></i> Dodaj Klienta
+            </button>
+        </div>
+
+        <!-- Komunikat o sukcesie -->
+        <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i>
+            <span th:text="${message}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Tabela klientów -->
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nazwa</th>
+                    <th>Adres</th>
+                    <th>Akcje</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="customer : ${customers}">
+                    <td th:text="${customer.id}"></td>
+                    <td th:text="${customer.name}"></td>
+                    <td th:text="${customer.address}"></td>
+                    <td>
+                        <button type="button" class="btn btn-warning btn-sm"
+                                th:attr="data-id=${customer.id},
+                                        data-name=${customer.name},
+                                        data-street=${customer.street},
+                                        data-postal-code=${customer.postalCode},
+                                        data-city=${customer.city}"
+                                onclick="editCustomer(this)">
+                            <i class="bi bi-pencil"></i> Edytuj
+                        </button>
+                        <a th:href="@{/customer/delete/{id}(id=${customer.id})}"
+                           class="btn btn-danger btn-sm"
+                           onclick="return confirm('Czy na pewno chcesz usunąć tego klienta?')">
+                            <i class="bi bi-trash"></i> Usuń
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Modal do dodawania/edycji -->
+        <div class="modal fade" id="customerModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalTitle">Dodaj Klienta</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="customerForm" th:action="@{/customer/save}" method="post">
+                            <input type="hidden" id="customerId" name="id">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Nazwa</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="street" class="form-label">Ulica</label>
+                                <input type="text" class="form-control" id="street" name="street" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="postalCode" class="form-label">Kod pocztowy</label>
+                                <input type="text" class="form-control" id="postalCode" name="postalCode" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="city" class="form-label">Miasto</label>
+                                <input type="text" class="form-control" id="city" name="city" required>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    <i class="bi bi-x-lg"></i> Anuluj
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-lg"></i> Zapisz
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function editCustomer(button) {
+            document.getElementById('modalTitle').textContent = 'Edytuj Klienta';
+            document.getElementById('customerId').value = button.getAttribute('data-id');
+            document.getElementById('name').value = button.getAttribute('data-name');
+            document.getElementById('street').value = button.getAttribute('data-street');
+            document.getElementById('postalCode').value = button.getAttribute('data-postal-code');
+            document.getElementById('city').value = button.getAttribute('data-city');
+            
+            new bootstrap.Modal(document.getElementById('customerModal')).show();
+        }
+
+        document.getElementById('customerModal').addEventListener('hidden.bs.modal', function () {
+            document.getElementById('modalTitle').textContent = 'Dodaj Klienta';
+            document.getElementById('customerForm').reset();
+            document.getElementById('customerId').value = '';
+        });
+    </script>
+</body>
+</html>
