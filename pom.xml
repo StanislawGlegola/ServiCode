@@ -14,7 +14,7 @@
 	<name>ServiCode</name>
 	<description>Projekt jest systemem zarządzania konserwacjami i serwisowaniem agregatów, który umożliwia efektywne monitorowanie, planowanie i dokumentowanie działań konserwacyjnych.</description>
 	<properties>
-		<java.version>21</java.version>
+		<java.version>17</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
