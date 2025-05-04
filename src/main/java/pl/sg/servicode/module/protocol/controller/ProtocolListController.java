@@ -30,8 +30,8 @@ public class ProtocolListController {
             model.addAttribute("activeTab", "protocol");
             return "protocol/list";
         } catch (Exception e) {
-            logger.error("Błąd podczas ładowania listy protokołów: {}", e.getMessage());
-            model.addAttribute("error", "Wystąpił błąd podczas ładowania danych");
+            logger.error("Error during loading protocols: {}", e.getMessage());
+            model.addAttribute("error", "Error during loading protocols: " + e.getMessage());
             return "protocol/list";
         }
     }
@@ -40,11 +40,11 @@ public class ProtocolListController {
     public String deleteProtocol(@PathVariable int id, RedirectAttributes redirectAttributes) {
         try {
             protocolService.deleteProtocol(id);
-            logger.info("Usunięto protokół o ID: {}", id);
-            redirectAttributes.addFlashAttribute("message", "Protokół został usunięty pomyślnie");
+            logger.info("Protocol with ID {} deleted successfully", id);
+            redirectAttributes.addFlashAttribute("message", "Protocol deleted successfully");
         } catch (Exception e) {
-            logger.error("Błąd podczas usuwania protokołu o ID {}: {}", id, e.getMessage());
-            redirectAttributes.addFlashAttribute("error", "Wystąpił błąd podczas usuwania protokołu: " + e.getMessage());
+            logger.error("Error during deleting protocol with ID {}: {}", id, e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Error during deleting protocol: " + e.getMessage());
         }
         return "redirect:/protocol";
     }

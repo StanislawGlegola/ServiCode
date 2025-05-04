@@ -5,3 +5,7 @@ databaseChangeLog:
       file: db/changelog/db.changelog-002-fill-db.yml
   - include:
       file: db/changelog/db.changelog-003-add-protocol-technician.yml
+  - include:
+      file: db/changelog/db.changelog-004-fill-protocol-technician.yml
+
+

@@ -23,43 +23,51 @@ public class RepositoryConfiguration {
     public DataSource dataSource() {
         BasicDataSource dataSource = new BasicDataSource();
         
-        // Sprawdź czy jesteśmy w Railway
-        String railwayHost = env.getProperty("MYSQLHOST");
-        String railwayPort = env.getProperty("MYSQLPORT");
-        String railwayDatabase = env.getProperty("MYSQLDATABASE");
-        String railwayUser = env.getProperty("MYSQLUSER");
-        String railwayPassword = env.getProperty("MYSQLPASSWORD");
+        // Debugowanie wszystkich zmiennych środowiskowych
+        log.info("Checking all possible database configuration variables:");
+        log.info("MYSQL_URL: {}", env.getProperty("MYSQL_URL"));
+        log.info("MYSQLHOST: {}", env.getProperty("MYSQLHOST"));
+        log.info("MYSQL_HOST: {}", env.getProperty("MYSQL_HOST"));
+        log.info("MYSQLPORT: {}", env.getProperty("MYSQLPORT"));
+        log.info("MYSQL_PORT: {}", env.getProperty("MYSQL_PORT"));
+        log.info("MYSQLDATABASE: {}", env.getProperty("MYSQLDATABASE"));
+        log.info("MYSQL_DATABASE: {}", env.getProperty("MYSQL_DATABASE"));
         
-        log.info("Railway configuration:");
-        log.info("Host: {}", railwayHost);
-        log.info("Port: {}", railwayPort);
-        log.info("Database: {}", railwayDatabase);
-        log.info("User: {}", railwayUser);
-        
-        if (railwayHost != null) {
-            // Użyj konfiguracji Railway
-            String url = String.format("jdbc:mysql://%s:%s/%s?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC",
-                    railwayHost, railwayPort, railwayDatabase);
-            log.info("Connecting to Railway MySQL with URL: {}", url);
-            dataSource.setUrl(url);
-            dataSource.setUsername(railwayUser);
-            dataSource.setPassword(railwayPassword);
+        // Sprawdź najpierw MYSQL_URL
+        String railwayUrl = env.getProperty("MYSQL_URL");
+        if (railwayUrl != null && !railwayUrl.isEmpty()) {
+            log.info("Using Railway MYSQL_URL: {}", railwayUrl);
+            dataSource.setUrl(railwayUrl);
         } else {
-            // Użyj lokalnej konfiguracji
-            String dbHost = env.getProperty("DB_HOST");
-            String dbPort = env.getProperty("DB_PORT");
-            String dbSid = env.getProperty("DB_SID");
-            String url = "jdbc:mysql://" + dbHost + ":" + dbPort + "/" + dbSid 
-                        + "?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC";
-            log.info("Connecting to local MySQL with URL: {}", url);
-            dataSource.setUrl(url);
-            dataSource.setUsername(env.getProperty("DB_USERNAME"));
-            dataSource.setPassword(env.getProperty("DB_PASSWORD"));
+            // Sprawdź alternatywne zmienne Railway
+            String railwayHost = env.getProperty("MYSQLHOST", env.getProperty("MYSQL_HOST"));
+            String railwayPort = env.getProperty("MYSQLPORT", env.getProperty("MYSQL_PORT"));
+            String railwayDatabase = env.getProperty("MYSQLDATABASE", env.getProperty("MYSQL_DATABASE"));
+            String railwayUser = env.getProperty("MYSQLUSER", env.getProperty("MYSQL_USER"));
+            String railwayPassword = env.getProperty("MYSQLPASSWORD", env.getProperty("MYSQL_PASSWORD"));
+            
+            if (railwayHost != null) {
+                String url = String.format("jdbc:mysql://%s:%s/%s?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC",
+                        railwayHost, railwayPort, railwayDatabase);
+                log.info("Using Railway individual variables. URL: {}", url);
+                dataSource.setUrl(url);
+                dataSource.setUsername(railwayUser);
+                dataSource.setPassword(railwayPassword);
+            } else {
+                // Lokalna konfiguracja jako ostateczność
+                String dbHost = env.getProperty("DB_HOST", "localhost");
+                String dbPort = env.getProperty("DB_PORT", "3306");
+                String dbSid = env.getProperty("DB_SID", "servicode");
+                String url = String.format("jdbc:mysql://%s:%s/%s?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=UTC",
+                        dbHost, dbPort, dbSid);
+                log.info("Using local configuration. URL: {}", url);
+                dataSource.setUrl(url);
+                dataSource.setUsername(env.getProperty("DB_USERNAME", "root"));
+                dataSource.setPassword(env.getProperty("DB_PASSWORD", ""));
+            }
         }
         
         dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-        
-        // Dodaj konfigurację puli połączeń
         dataSource.setInitialSize(1);
         dataSource.setMaxTotal(3);
         dataSource.setMaxWaitMillis(10000);

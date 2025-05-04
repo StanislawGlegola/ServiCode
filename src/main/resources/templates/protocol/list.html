@@ -9,84 +9,260 @@
 <head>
     <title>Lista Protokołów - ServiCode</title>
     <style>
-        /* Style tutaj */
+        body {
+            overflow-x: hidden;
+        }
+
+        .content {
+            width: 100vw;
+            max-width: 100vw;
+            padding: 0;
+            margin: 0;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 100vw !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+        
+        .main-content-wrapper {
+            padding-left: 20px;
+            padding-right: 20px;
+            width: 100%;
+        }
+        
+        .table-responsive {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+        
+        .table {
+            width: 100%;
+            table-layout: fixed;
+            margin: 0;
+            border-collapse: collapse;
+        }
+        
+        /* Umożliwienie zawijania tekstu w komórkach */
+        .table th, .table td {
+            padding: 0.75rem;
+            vertical-align: top;
+            word-wrap: break-word;
+            overflow: hidden;
+        }
+        
+        /* Ustawienie szerokości kolumn */
+        .table th:nth-child(1), .table td:nth-child(1) { /* ID */
+            width: 3%;
+        }
+        
+        .table th:nth-child(2), .table td:nth-child(2), /* Data rozpoczęcia */
+        .table th:nth-child(3), .table td:nth-child(3) { /* Data zakończenia */
+            width: 8%;
+        }
+        
+        .table th:nth-child(4), .table td:nth-child(4) { /* Klient */
+            width: 8%;
+        }
+        
+        .table th:nth-child(5), .table td:nth-child(5) { /* Urządzenie */
+            width: 8%;
+        }
+        
+        .table th:nth-child(6), .table td:nth-child(6) { /* Technicy */
+            width: 10%;
+        }
+        
+        .table th:nth-child(7), .table td:nth-child(7), /* Opis problemu */
+        .table th:nth-child(8), .table td:nth-child(8) { /* Opis prac */
+            width: 12%;
+        }
+        
+        .table th:nth-child(9), .table td:nth-child(9), /* Materiały */
+        .table th:nth-child(10), .table td:nth-child(10) { /* Uwagi */
+            width: 9%;
+        }
+        
+        .table th:nth-child(11), .table td:nth-child(11) { /* Akcje */
+            width: 13%;
+            min-width: 120px;
+        }
+        
+        /* Style dla filtra */
+        .filter-container {
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        
+        #customerFilter {
+            padding: 8px;
+            width: 300px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        
+        /* Styl dla zawijania długiego tekstu */
+        .text-truncate-container {
+            max-height: 100px;
+            overflow-y: auto;
+        }
+        
+        /* Dodatkowe style dla headerów i przycisków */
+        .header-container {
+            width: 100%;
+            margin-bottom: 15px;
+        }
+        
+        .btn-group {
+            white-space: nowrap;
+            display: flex;
+        }
+        
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+            flex: 1;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 <div class="content">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Lista Protokołów</h2>
-        <a th:href="@{/protocol/form/new}" class="btn btn-primary">
-            <i class="bi bi-plus-lg"></i> Dodaj Protokół
-        </a>
-    </div>
+    <div class="main-content-wrapper">
+        <div class="d-flex justify-content-between align-items-center mb-4 header-container">
+            <h2>Lista Protokołów</h2>
+            <a th:href="@{/protocol/form/new}" class="btn btn-primary">
+                <i class="bi bi-plus-lg"></i> Dodaj Protokół
+            </a>
+        </div>
 
-    <!-- Komunikat o sukcesie -->
-    <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="bi bi-check-circle me-2"></i>
-        <span th:text="${message}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
+        <!-- Komunikat o sukcesie -->
+        <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i>
+            <span th:text="${message}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
 
-    <!-- Komunikat o błędzie -->
-    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="bi bi-exclamation-triangle me-2"></i>
-        <span th:text="${error}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-
-    <!-- Tabela protokołów -->
-    <div class="table-responsive">
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th>ID</th>
-                <th>Data rozpoczęcia</th>
-                <th>Data zakończenia</th>
-                <th>Klient</th>
-                <th>Urządzenie (S/N)</th>
-                <th>Technicy (F-gaz)</th>
-                <th>Opis problemu</th>
-                <th>Opis prac</th>
-                <th>Materiały</th>
-                <th>Uwagi</th>
-                <th>Akcje</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="protocol : ${protocols}">
-                <td th:text="${protocol.id}"></td>
-                <td th:text="${#temporals.format(protocol.startDate, 'dd-MM-yyyy HH:mm')}"></td>
-                <td th:text="${protocol.endDate != null ? #temporals.format(protocol.endDate, 'dd-MM-yyyy HH:mm') : '-'}"></td>
-                <td th:text="${protocol.customerName}"></td>
-                <td th:text="${protocol.deviceSerialNumber}"></td>
-                <td>
+        <!-- Komunikat o błędzie -->
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            <span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        
+        <div class="filter-container">
+            <label for="customerFilter" class="form-label">Filtruj po kliencie:</label>
+            <input type="text" id="customerFilter" class="form-control" onkeyup="filterTable()" placeholder="Wpisz nazwę klienta...">
+        </div>
+        
+        <!-- Tabela protokołów -->
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-light">
+                <tr>
+                    <th>ID</th>
+                    <th>Data rozpoczęcia</th>
+                    <th>Data zakończenia</th>
+                    <th>Klient</th>
+                    <th>Urządzenie (S/N)</th>
+                    <th>Technicy (F-gaz)</th>
+                    <th>Opis problemu</th>
+                    <th>Opis prac</th>
+                    <th>Materiały</th>
+                    <th>Uwagi</th>
+                    <th>Akcje</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="protocol : ${protocols}">
+                    <td th:text="${protocol.id}"></td>
+                    <td th:text="${#temporals.format(protocol.startDate, 'dd-MM-yyyy HH:mm')}"></td>
+                    <td th:text="${protocol.endDate != null ? #temporals.format(protocol.endDate, 'dd-MM-yyyy HH:mm') : '-'}"></td>
+                    <td th:text="${protocol.customerName}"></td>
+                    <td th:text="${protocol.deviceSerialNumber}"></td>
+                    <td>
                         <span th:each="technician : ${protocol.technicians}">
                             <span th:text="${technician.firstName + ' ' + technician.lastName + ' (' + technician.fGaz + ')'}"></span><br/>
                         </span>
-                </td>
-                <td th:text="${protocol.issueDescription}"></td>
-                <td th:text="${protocol.workDescription}"></td>
-                <td th:text="${protocol.materials}"></td>
-                <td th:text="${protocol.notes}"></td>
-                <td>
-                    <a th:href="@{/protocol/form/edit/{id}(id=${protocol.id})}" class="btn btn-warning btn-sm">
-                        <i class="bi bi-pencil"></i> Edytuj
-                    </a>
-                    <a th:href="@{/protocol/delete/{id}(id=${protocol.id})}"
-                       class="btn btn-danger btn-sm"
-                       onclick="return confirm('Czy na pewno chcesz usunąć ten protokół?')">
-                        <i class="bi bi-trash"></i> Usuń
-                    </a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+                    </td>
+                    <td>
+                        <div class="text-truncate-container">
+                            <span th:text="${protocol.issueDescription}"></span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="text-truncate-container">
+                            <span th:text="${protocol.workDescription}"></span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="text-truncate-container">
+                            <span th:text="${protocol.materials}"></span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="text-truncate-container">
+                            <span th:text="${protocol.notes}"></span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <a th:href="@{/protocol/form/edit/{id}(id=${protocol.id})}" class="btn btn-warning btn-sm me-1">
+                                <i class="bi bi-pencil"></i> Edytuj
+                            </a>
+                            <a th:href="@{/protocol/delete/{id}(id=${protocol.id})}"
+                               class="btn btn-danger btn-sm"
+                               onclick="return confirm('Czy na pewno chcesz usunąć ten protokół?')">
+                                <i class="bi bi-trash"></i> Usuń
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
 <script>
-    // Skrypty tutaj
+    // Sprawdź, czy potrzebne są dostosowania po załadowaniu strony
+    document.addEventListener('DOMContentLoaded', function() {
+        // Upewnij się, że kontener ma pełną szerokość
+        var containers = document.getElementsByClassName('container');
+        for (var i = 0; i < containers.length; i++) {
+            containers[i].style.maxWidth = '100%';
+            containers[i].style.paddingLeft = '0';
+            containers[i].style.paddingRight = '0';
+            containers[i].style.marginLeft = '0';
+            containers[i].style.marginRight = '0';
+        }
+    });
+
+    function filterTable() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("customerFilter");
+        filter = input.value.toUpperCase();
+        table = document.querySelector(".table");
+        tr = table.getElementsByTagName("tr");
+        
+        for (i = 1; i < tr.length; i++) { // Pomijamy nagłówek
+            td = tr[i].getElementsByTagName("td")[3]; // Kolumna klienta
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }       
+        }
+    }
 </script>
 </body>
 </html>

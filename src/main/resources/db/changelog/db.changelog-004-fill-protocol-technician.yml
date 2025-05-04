@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 4
+      author: Stanislaw Glegola
+      changes:
+        - sql:
+            sql: |
+              INSERT INTO protocol_technician (protocol_id, technician_id) 
+              VALUES 
+              (1, 1),  -- Jan Kowalski pracował przy protokole 1
+              (1, 2),  -- Anna Nowak również pracowała przy protokole 1
+              (2, 2),  -- Anna Nowak pracowała przy protokole 2
+              (2, 3),  -- Marek Wiśniewski również pracował przy protokole 2
+              (3, 1);  -- Jan Kowalski pracował przy protokole 3
