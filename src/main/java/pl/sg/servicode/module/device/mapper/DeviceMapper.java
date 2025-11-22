@@ -1,11 +1,18 @@
 package pl.sg.servicode.module.device.mapper;
 
 import org.springframework.stereotype.Component;
+import pl.sg.servicode.module.customer.service.CustomerService;
 import pl.sg.servicode.module.device.DTO.DeviceDTO;
 import pl.sg.servicode.module.device.entity.DeviceEntity;
 
 @Component
 public class DeviceMapper {
+    private final CustomerService customerService;
+
+    public DeviceMapper(CustomerService customerService) {
+        this.customerService = customerService;
+    }
+
     public DeviceDTO toDTO(DeviceEntity entity) {
         DeviceDTO dto = new DeviceDTO();
         dto.setId(entity.getId());
@@ -13,6 +20,16 @@ public class DeviceMapper {
         dto.setSerialNumber(entity.getSerialNumber());
         dto.setManufacturer(entity.getManufacturer());
         dto.setCustomerId(entity.getCustomerId());
+        
+        // Pobierz i ustaw nazwę klienta
+        if (entity.getCustomerId() != null) {
+            try {
+                dto.setCustomerName(customerService.getCustomerById(entity.getCustomerId()).getName());
+            } catch (Exception e) {
+                dto.setCustomerName("Nieznany klient");
+            }
+        }
+        
         return dto;
     }
 

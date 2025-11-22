@@ -173,4 +173,23 @@ public class ProtocolDTO {
     public void setTechnicians(List<TechnicianInfo> technicians) {
         this.technicians = technicians;
     }
-} 
+
+    @Override
+    public String toString() {
+        return "ProtocolDTO{" +
+                "id=" + id +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", issueDescription='" + issueDescription + '\'' +
+                ", workDescription='" + workDescription + '\'' +
+                ", materials='" + materials + '\'' +
+                ", notes='" + notes + '\'' +
+                ", customerId=" + customerId +
+                ", customerName='" + customerName + '\'' +
+                ", deviceId=" + deviceId +
+                ", deviceSerialNumber='" + deviceSerialNumber + '\'' +
+                ", technicianIds=" + technicianIds +
+                ", technicians=" + technicians +
+                '}';
+    }
+}

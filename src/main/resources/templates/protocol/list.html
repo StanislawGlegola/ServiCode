@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout/base :: html(
-        ~{::title},
-        ~{::style},
-        ~{::div.content},
-        ~{::script}
+        title=~{::title},
+        styles=~{::style},
+        content=~{::div.content},
+        scripts=~{::script}
       )}">
 <head>
     <title>Lista Protokołów - ServiCode</title>
@@ -14,24 +14,11 @@
         }
 
         .content {
-            width: 100vw;
-            max-width: 100vw;
             padding: 0;
             margin: 0;
-            overflow-x: hidden;
-        }
-        
-        .container {
-            max-width: 100vw !important;
-            padding-left: 0 !important;
-            padding-right: 0 !important;
-            margin-left: 0 !important;
-            margin-right: 0 !important;
         }
         
         .main-content-wrapper {
-            padding-left: 20px;
-            padding-right: 20px;
             width: 100%;
         }
         
@@ -39,59 +26,69 @@
             width: 100%;
             margin: 0;
             padding: 0;
-            overflow-x: hidden;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
         
         .table {
             width: 100%;
-            table-layout: fixed;
+            min-width: 1200px; /* Minimalna szerokość tabeli, aby wszystkie kolumny były widoczne */
             margin: 0;
             border-collapse: collapse;
+            table-layout: auto; /* Zmieniono z fixed na auto dla lepszego dopasowania */
         }
         
         /* Umożliwienie zawijania tekstu w komórkach */
         .table th, .table td {
-            padding: 0.75rem;
+            padding: 0.5rem; /* Zmniejszono padding z 0.75rem */
             vertical-align: top;
             word-wrap: break-word;
             overflow: hidden;
         }
         
-        /* Ustawienie szerokości kolumn */
+        /* Ustawienie szerokości kolumn - dostosowane do rzeczywistych potrzeb */
         .table th:nth-child(1), .table td:nth-child(1) { /* ID */
-            width: 3%;
+            width: 4%;
+            min-width: 40px;
         }
         
         .table th:nth-child(2), .table td:nth-child(2), /* Data rozpoczęcia */
         .table th:nth-child(3), .table td:nth-child(3) { /* Data zakończenia */
-            width: 8%;
+            width: 9%;
+            min-width: 120px;
         }
         
         .table th:nth-child(4), .table td:nth-child(4) { /* Klient */
             width: 8%;
+            min-width: 100px;
         }
         
         .table th:nth-child(5), .table td:nth-child(5) { /* Urządzenie */
             width: 8%;
+            min-width: 100px;
         }
         
         .table th:nth-child(6), .table td:nth-child(6) { /* Technicy */
             width: 10%;
+            min-width: 120px;
         }
         
         .table th:nth-child(7), .table td:nth-child(7), /* Opis problemu */
         .table th:nth-child(8), .table td:nth-child(8) { /* Opis prac */
-            width: 12%;
+            width: 11%;
+            min-width: 130px;
         }
         
         .table th:nth-child(9), .table td:nth-child(9), /* Materiały */
         .table th:nth-child(10), .table td:nth-child(10) { /* Uwagi */
-            width: 9%;
+            width: 8%;
+            min-width: 100px;
         }
         
         .table th:nth-child(11), .table td:nth-child(11) { /* Akcje */
-            width: 13%;
-            min-width: 120px;
+            width: 15%;
+            min-width: 180px; /* Zwiększono minimalną szerokość, aby przyciski były w pełni widoczne */
+            white-space: nowrap;
         }
         
         /* Style dla filtra */
@@ -122,13 +119,18 @@
         .btn-group {
             white-space: nowrap;
             display: flex;
+            gap: 0.25rem; /* Dodano odstęp między przyciskami */
         }
         
         .btn-sm {
             padding: 0.25rem 0.5rem;
             font-size: 0.875rem;
-            flex: 1;
-            text-align: center;
+            flex-shrink: 0; /* Zapobiega zmniejszaniu przycisków */
+        }
+        
+        /* Upewnij się, że przyciski w kolumnie Akcje są widoczne */
+        .table td:nth-child(11) .btn-group {
+            justify-content: flex-start;
         }
     </style>
 </head>
@@ -213,8 +215,11 @@
                     </td>
                     <td>
                         <div class="btn-group" role="group">
-                            <a th:href="@{/protocol/form/edit/{id}(id=${protocol.id})}" class="btn btn-warning btn-sm me-1">
+                            <a th:href="@{/protocol/form/edit/{id}(id=${protocol.id})}" class="btn btn-warning btn-sm">
                                 <i class="bi bi-pencil"></i> Edytuj
+                            </a>
+                            <a th:href="@{/protocol/{id}/pdf(id=${protocol.id})}" class="btn btn-primary btn-sm">
+                                <i class="bi bi-file-earmark-pdf"></i> PDF
                             </a>
                             <a th:href="@{/protocol/delete/{id}(id=${protocol.id})}"
                                class="btn btn-danger btn-sm"
@@ -231,19 +236,6 @@
 </div>
 
 <script>
-    // Sprawdź, czy potrzebne są dostosowania po załadowaniu strony
-    document.addEventListener('DOMContentLoaded', function() {
-        // Upewnij się, że kontener ma pełną szerokość
-        var containers = document.getElementsByClassName('container');
-        for (var i = 0; i < containers.length; i++) {
-            containers[i].style.maxWidth = '100%';
-            containers[i].style.paddingLeft = '0';
-            containers[i].style.paddingRight = '0';
-            containers[i].style.marginLeft = '0';
-            containers[i].style.marginRight = '0';
-        }
-    });
-
     function filterTable() {
         var input, filter, table, tr, td, i, txtValue;
         input = document.getElementById("customerFilter");
